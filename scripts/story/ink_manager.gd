@@ -1,9 +1,10 @@
 extends Node
 
 # Ink Manager - Handles Ink story runtime
-# Uses inkgd plugin
+# Uses godot-ink plugin (Godot 4.x compatible)
+# Plugin: https://github.com/paulloz/godot-ink
 
-var story
+var story: InkStory
 var current_chapter = ""
 
 signal line_displayed(type: String, speaker: String, text: String)
@@ -13,7 +14,7 @@ signal trust_changed(amount: int)
 signal chapter_ended()
 
 func _ready():
-	# Connect to inkgd's InkPlayer or Story runtime
+	# godot-ink will be loaded via plugin
 	pass
 
 ## Load and start a chapter
@@ -25,24 +26,21 @@ func load_chapter(chapter_id: String):
 		push_error("Ink file not found: " + ink_path)
 		return false
 	
-	# Load compiled Ink JSON
-	var ink_file = FileAccess.open(ink_path, FileAccess.READ)
-	if not ink_file:
-		push_error("Failed to open Ink file")
-		return false
-		
-	var json_string = ink_file.get_as_text()
-	ink_file.close()
+	# Load compiled Ink JSON using godot-ink
+	var ink_resource = load(ink_path)
 	
-	# Initialize Ink story
-	# Note: This requires inkgd plugin to be installed
-	story = InkRuntime.Story.new(json_string)
+	if not ink_resource:
+		push_error("Failed to load Ink resource")
+		return false
+	
+	# Create InkStory instance (godot-ink API)
+	story = InkStory.new(ink_resource.content)
 	
 	# Bind external functions
-	story.bind_external_function("unlock_clue", _on_unlock_clue)
-	story.bind_external_function("trust_change", _on_trust_change)
-	story.bind_external_function("choice_made", _on_choice_made)
-	story.bind_external_function("play_bgm", _on_play_bgm)
+	story.bind_external_function("unlock_clue", self, "_on_unlock_clue")
+	story.bind_external_function("trust_change", self, "_on_trust_change")
+	story.bind_external_function("choice_made", self, "_on_choice_made")
+	story.bind_external_function("play_bgm", self, "_on_play_bgm")
 	
 	print("Chapter loaded: ", chapter_id)
 	return true
@@ -141,17 +139,17 @@ func get_story_state() -> Dictionary:
 		"can_continue": story.can_continue,
 		"has_choices": story.has_choices,
 		"current_choices": story.current_choices,
-		"variables": story.variables_state
+		"variables": story.variables_state if story.variables_state else {}
 	}
 
 ## Save story state
 func save_state() -> String:
 	if not story:
 		return ""
-	return story.state.to_json()
+	return story.save_state_to_json()
 
 ## Load story state
 func load_state(state_json: String):
 	if not story:
 		return
-	story.state.load_json(state_json)
+	story.load_state_from_json(state_json)
