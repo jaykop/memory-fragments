@@ -1,6 +1,7 @@
 extends Control
 
 # DialogueSystem - Handles dialogue display and progression
+# Now integrated with InkManager for Ink-based stories
 
 signal dialogue_started
 signal dialogue_ended
@@ -12,19 +13,28 @@ signal choice_presented(choices: Array)
 @onready var choice_container: VBoxContainer = $ChoiceContainer
 
 # State
-var current_dialogue: Dictionary = {}
-var dialogue_queue: Array = []
-var current_index: int = 0
 var is_typing: bool = false
 var text_speed: float = 0.05  # seconds per character
 
 # Typing effect
 var visible_characters: int = 0
 var typing_timer: float = 0.0
+var full_text: String = ""
+
+# Ink integration
+var using_ink: bool = false
 
 func _ready():
 	text_box.visible_characters = 0
 	choice_container.visible = false
+	
+	# Connect to InkManager if it exists
+	if has_node("/root/InkManager"):
+		var ink_manager = get_node("/root/InkManager")
+		ink_manager.line_displayed.connect(_on_ink_line_displayed)
+		ink_manager.choice_presented.connect(_on_ink_choices_presented)
+		using_ink = true
+		print("DialogueSystem: Connected to InkManager")
 	
 func _process(delta):
 	if is_typing:
@@ -36,9 +46,129 @@ func _process(delta):
 			
 			if visible_characters >= text_box.get_total_character_count():
 				is_typing = false
-				
+
+## Start playing a chapter using InkManager
+func start_chapter(chapter_id: String):
+	if not using_ink:
+		push_error("DialogueSystem: InkManager not available")
+		return false
+		
+	var ink_manager = get_node("/root/InkManager")
+	if ink_manager.load_chapter(chapter_id):
+		dialogue_started.emit()
+		advance_ink_story()
+		return true
+	return false
+
+## Continue the Ink story
+func advance_ink_story():
+	if not using_ink:
+		return
+		
+	var ink_manager = get_node("/root/InkManager")
+	
+	if is_typing:
+		# Skip typing animation
+		_complete_typing()
+		return
+	
+	# Continue to next line
+	if ink_manager.continue_story():
+		# More content available, will be displayed via signal
+		pass
+	else:
+		# No more content or choices are present
+		var state = ink_manager.get_story_state()
+		if not state.has_choices:
+			dialogue_ended.emit()
+
+## Handle line from InkManager
+func _on_ink_line_displayed(line_type: String, speaker: String, text: String):
+	match line_type:
+		"character":
+			_show_character_line(speaker, text)
+		"thought":
+			_show_thought(text)
+		"narration":
+			_show_narration(text)
+		_:
+			_show_narration(text)
+	
+	# Auto-advance for continuous story flow
+	# Player can still click to skip typing
+	
+func _show_character_line(speaker: String, text: String):
+	speaker_label.text = _format_speaker_name(speaker)
+	speaker_label.visible = true
+	_start_typing_effect(text)
+
+func _show_thought(text: String):
+	speaker_label.visible = false
+	# Could add special formatting for thoughts
+	_start_typing_effect("[i]" + text + "[/i]")
+
+func _show_narration(text: String):
+	speaker_label.visible = false
+	_start_typing_effect(text)
+
+func _format_speaker_name(speaker_id: String) -> String:
+	# Map character IDs to display names
+	var name_map = {
+		"junhyuk": "이준혁",
+		"minsoo": "최민수",
+		"yujin": "강유진",
+		"narrator": ""
+	}
+	return name_map.get(speaker_id, speaker_id.capitalize())
+
+func _start_typing_effect(text: String):
+	full_text = text
+	text_box.text = text
+	visible_characters = 0
+	text_box.visible_characters = 0
+	is_typing = true
+	typing_timer = 0.0
+	choice_container.visible = false
+
+func _complete_typing():
+	is_typing = false
+	text_box.visible_characters = text_box.get_total_character_count()
+
+## Handle choices from InkManager
+func _on_ink_choices_presented(choices: Array):
+	_show_ink_choices(choices)
+
+func _show_ink_choices(choices: Array):
+	# Clear existing choices
+	for child in choice_container.get_children():
+		child.queue_free()
+	
+	# Create choice buttons
+	for i in range(choices.size()):
+		var choice_text = choices[i]
+		var button = Button.new()
+		button.text = choice_text
+		button.custom_minimum_size = Vector2(0, 50)
+		button.pressed.connect(_on_ink_choice_selected.bind(i))
+		choice_container.add_child(button)
+	
+	choice_container.visible = true
+	choice_presented.emit(choices)
+
+func _on_ink_choice_selected(choice_index: int):
+	if not using_ink:
+		return
+	
+	var ink_manager = get_node("/root/InkManager")
+	ink_manager.make_choice(choice_index)
+	choice_container.visible = false
+
+## Legacy JSON dialogue support (fallback)
 func load_dialogue_file(file_path: String) -> bool:
-	"""Load dialogue from JSON file"""
+	"""Load dialogue from JSON file (legacy support)"""
+	print("DialogueSystem: Using legacy JSON mode")
+	using_ink = false
+	
 	if not FileAccess.file_exists(file_path):
 		print("Dialogue file not found: %s" % file_path)
 		return false
@@ -53,126 +183,14 @@ func load_dialogue_file(file_path: String) -> bool:
 	if error != OK:
 		print("Failed to parse dialogue JSON: %s" % file_path)
 		return false
-		
-	current_dialogue = json.data
-	dialogue_queue = current_dialogue.get("dialogues", [])
-	current_index = 0
 	
-	emit_signal("dialogue_started")
-	show_current_dialogue()
-	return true
-	
-func show_current_dialogue():
-	"""Display current dialogue entry"""
-	if current_index >= dialogue_queue.size():
-		emit_signal("dialogue_ended")
-		return
-		
-	var entry = dialogue_queue[current_index]
-	var entry_type = entry.get("type", "dialogue")
-	
-	if entry_type == "choice":
-		show_choices(entry)
-	else:
-		show_text(entry)
-		
-func show_text(entry: Dictionary):
-	"""Display text dialogue"""
-	var speaker = entry.get("speaker", "")
-	var text = entry.get("text", "")
-	
-	# Set speaker name
-	if speaker == "narrator":
-		speaker_label.text = ""
-		speaker_label.visible = false
-	else:
-		speaker_label.text = speaker.capitalize()
-		speaker_label.visible = true
-		
-	# Start typing effect
-	text_box.text = text
-	visible_characters = 0
-	text_box.visible_characters = 0
-	is_typing = true
-	typing_timer = 0.0
-	
-	# Hide choices
-	choice_container.visible = false
-	
-func show_choices(entry: Dictionary):
-	"""Display choice options"""
-	var choices = entry.get("choices", [])
-	
-	# Clear existing choices
-	for child in choice_container.get_children():
-		child.queue_free()
-		
-	# Create choice buttons
-	for i in range(choices.size()):
-		var choice = choices[i]
-		var button = Button.new()
-		button.text = choice.get("text", "")
-		button.custom_minimum_size = Vector2(0, 50)
-		button.pressed.connect(_on_choice_selected.bind(i))
-		choice_container.add_child(button)
-		
-	choice_container.visible = true
-	emit_signal("choice_presented", choices)
-	
-func _on_choice_selected(choice_index: int):
-	"""Handle choice selection"""
-	var entry = dialogue_queue[current_index]
-	var choices = entry.get("choices", [])
-	
-	if choice_index < choices.size():
-		var choice = choices[choice_index]
-		var next_id = choice.get("next", -1)
-		var trust_change = choice.get("trust_change", 0)
-		
-		# Apply trust change if GameManager exists
-		if trust_change != 0:
-			print("Trust change: %d" % trust_change)
-			# TODO: Apply to trust system when implemented
-			
-		# Move to next dialogue
-		if next_id != -1:
-			# Find dialogue with matching ID
-			for i in range(dialogue_queue.size()):
-				if dialogue_queue[i].get("id", -1) == next_id:
-					current_index = i
-					show_current_dialogue()
-					return
-					
-	# If no valid next, end dialogue
-	emit_signal("dialogue_ended")
-	
-func advance_dialogue():
-	"""Move to next dialogue entry"""
-	if is_typing:
-		# Skip typing animation
-		is_typing = false
-		text_box.visible_characters = text_box.get_total_character_count()
-		return
-		
-	var entry = dialogue_queue[current_index]
-	var next_id = entry.get("next", -1)
-	
-	if next_id == -1 or entry.get("type") == "choice":
-		# No automatic progression for choices or end
-		return
-		
-	# Find next dialogue
-	for i in range(dialogue_queue.size()):
-		if dialogue_queue[i].get("id", -1) == next_id:
-			current_index = i
-			show_current_dialogue()
-			return
-			
-	# If no next found, end dialogue
-	emit_signal("dialogue_ended")
-	
+	# Legacy implementation kept for compatibility
+	# TODO: Migrate old dialogues to Ink format
+	return false
+
 func _input(event):
 	"""Handle input for dialogue progression"""
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_ENTER or event.keycode == KEY_SPACE:
-			advance_dialogue()
+			if using_ink:
+				advance_ink_story()
