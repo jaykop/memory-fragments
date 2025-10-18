@@ -1,0 +1,228 @@
+name: Godot CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  GODOT_VERSION: 4.3
+
+jobs:
+  # Job 1: Code Quality Checks
+  lint:
+    name: Code Quality Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Check GDScript formatting
+        run: |
+          echo "Checking GDScript files..."
+          find . -name "*.gd" -type f | while read file; do
+            echo "Checking $file"
+            # Add gdformat or gdlint when available
+          done
+
+  # Job 2: Unit Tests
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: ${{ env.GODOT_VERSION }}
+          use-dotnet: false
+
+      - name: Verify Godot installation
+        run: godot --version
+
+      - name: Import project
+        run: |
+          godot --headless --import --quit || true
+          
+      - name: Run unit tests
+        run: |
+          godot --headless --script res://tests/run_tests.gd
+
+  # Job 3: Build for Windows
+  build-windows:
+    name: Build Windows Export
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: ${{ env.GODOT_VERSION }}
+          use-dotnet: false
+          include-templates: true
+
+      - name: Create export directory
+        run: mkdir -p builds/windows
+
+      - name: Export Windows build
+        run: |
+          godot --headless --export-release "Windows Desktop" builds/windows/MemoryFragments.exe
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: builds/windows/
+          retention-days: 7
+
+  # Job 4: Build for Linux
+  build-linux:
+    name: Build Linux Export
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: ${{ env.GODOT_VERSION }}
+          use-dotnet: false
+          include-templates: true
+
+      - name: Create export directory
+        run: mkdir -p builds/linux
+
+      - name: Export Linux build
+        run: |
+          godot --headless --export-release "Linux/X11" builds/linux/MemoryFragments.x86_64
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-build
+          path: builds/linux/
+          retention-days: 7
+
+  # Job 5: Build for Web (HTML5)
+  build-web:
+    name: Build Web Export
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: ${{ env.GODOT_VERSION }}
+          use-dotnet: false
+          include-templates: true
+
+      - name: Create export directory
+        run: mkdir -p builds/web
+
+      - name: Export Web build
+        run: |
+          godot --headless --export-release "Web" builds/web/index.html
+
+      - name: Upload Web artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: builds/web/
+          retention-days: 7
+
+  # Job 6: Deploy to itch.io (only on main branch)
+  deploy-itch:
+    name: Deploy to itch.io
+    runs-on: ubuntu-latest
+    needs: [build-windows, build-linux, build-web]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Download Windows build
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-build
+          path: builds/windows
+
+      - name: Download Linux build
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-build
+          path: builds/linux
+
+      - name: Download Web build
+        uses: actions/download-artifact@v4
+        with:
+          name: web-build
+          path: builds/web
+
+      - name: Install Butler (itch.io CLI)
+        run: |
+          curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+          unzip butler.zip
+          chmod +x butler
+          ./butler -V
+
+      - name: Deploy to itch.io
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+        run: |
+          # Replace 'yourusername/memory-fragments' with your itch.io project
+          ./butler push builds/windows yourusername/memory-fragments:windows --userversion ${GITHUB_SHA::7}
+          ./butler push builds/linux yourusername/memory-fragments:linux --userversion ${GITHUB_SHA::7}
+          ./butler push builds/web yourusername/memory-fragments:web --userversion ${GITHUB_SHA::7}
+
+  # Job 7: Create GitHub Release (on tags)
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: [build-windows, build-linux, build-web]
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create archives
+        run: |
+          cd windows-build && zip -r ../MemoryFragments-Windows.zip . && cd ..
+          cd linux-build && tar -czf ../MemoryFragments-Linux.tar.gz . && cd ..
+          cd web-build && zip -r ../MemoryFragments-Web.zip . && cd ..
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            MemoryFragments-Windows.zip
+            MemoryFragments-Linux.tar.gz
+            MemoryFragments-Web.zip
+          body: |
+            ## Memory Fragments ${{ github.ref_name }}
+            
+            ### Downloads
+            - Windows: MemoryFragments-Windows.zip
+            - Linux: MemoryFragments-Linux.tar.gz
+            - Web: MemoryFragments-Web.zip
+            
+            ### Changes
+            See commits since last release for details.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
