@@ -6,9 +6,9 @@ signal dialogue_started
 signal dialogue_ended
 signal choice_presented(choices: Array)
 
-# UI References (set in editor)
-@onready var text_box: RichTextLabel = $TextBox
-@onready var speaker_label: Label = $SpeakerLabel
+# UI References (set via node paths)
+@onready var text_box: RichTextLabel = $DialogueBox/MarginContainer/VBoxContainer/TextBox
+@onready var speaker_label: Label = $DialogueBox/MarginContainer/VBoxContainer/SpeakerLabel
 @onready var choice_container: VBoxContainer = $ChoiceContainer
 
 # State
@@ -84,8 +84,10 @@ func show_text(entry: Dictionary):
 	# Set speaker name
 	if speaker == "narrator":
 		speaker_label.text = ""
+		speaker_label.visible = false
 	else:
 		speaker_label.text = speaker.capitalize()
+		speaker_label.visible = true
 		
 	# Start typing effect
 	text_box.text = text
@@ -110,6 +112,7 @@ func show_choices(entry: Dictionary):
 		var choice = choices[i]
 		var button = Button.new()
 		button.text = choice.get("text", "")
+		button.custom_minimum_size = Vector2(0, 50)
 		button.pressed.connect(_on_choice_selected.bind(i))
 		choice_container.add_child(button)
 		
@@ -127,9 +130,9 @@ func _on_choice_selected(choice_index: int):
 		var trust_change = choice.get("trust_change", 0)
 		
 		# Apply trust change if GameManager exists
-		if trust_change != 0 and GameManager:
-			# TODO: Apply to trust system when implemented
+		if trust_change != 0:
 			print("Trust change: %d" % trust_change)
+			# TODO: Apply to trust system when implemented
 			
 		# Move to next dialogue
 		if next_id != -1:
