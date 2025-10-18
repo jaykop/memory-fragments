@@ -37,7 +37,23 @@ Ace Attorney-style moments where you must present the right evidence from your i
 
 ## Development Status
 
-🚧 **In Development** - Project structure and core systems being implemented
+🎮 **Prototype Phase** - Basic dialogue system implemented
+
+### Completed Features
+- ✅ GameManager core system
+- ✅ Dialogue system with typing effect
+- ✅ Choice system
+- ✅ Chapter 5 prologue dialogue (3 branching paths)
+
+### In Progress
+- 🚧 Trust system
+- 🚧 Clue collection system
+- 🚧 Memory connection board
+
+### Coming Soon
+- 📋 Full Chapter 5 content
+- 📋 Save/Load system
+- 📋 UI polish and visual assets
 
 ## Technology Stack
 
@@ -50,18 +66,47 @@ Ace Attorney-style moments where you must present the right evidence from your i
 ```
 memory-fragments/
 ├── scenes/           # Scene files (.tscn)
+│   ├── Main.tscn            # Main game scene
+│   └── DialogueSystem.tscn  # Dialogue UI
 ├── scripts/          # GDScript files
+│   ├── core/                # Core systems
+│   │   └── GameManager.gd
+│   └── dialogue/            # Dialogue system
+│       └── DialogueSystem.gd
 ├── data/             # Game data (dialogues, clues)
-├── assets/           # Art, audio, UI elements
-└── addons/           # Plugins and tools
+│   └── dialogues/
+│       └── chapter_5/
+│           └── rooftop_01.json
+└── assets/           # Art, audio, UI elements
 ```
 
 ## Getting Started
 
-1. Install [Godot 4.3+](https://godotengine.org/download)
-2. Clone this repository
-3. Open the project in Godot
-4. Run the main scene
+### Prerequisites
+- [Godot 4.3+](https://godotengine.org/download)
+
+### Running the Prototype
+1. Clone this repository
+   ```bash
+   git clone https://github.com/jaykop/memory-fragments.git
+   ```
+2. Open the project in Godot
+3. Press F5 or click "Run Project"
+
+### Controls
+- **Enter/Space**: Advance dialogue
+- **Mouse Click**: Select choices
+
+## How to Play the Prototype
+
+1. The game starts at the prologue (Chapter 5 - Rooftop scene)
+2. Read through the dialogue by pressing Enter or Space
+3. When choices appear, click on your preferred option
+4. Each choice affects the "trust" system (currently logged in console)
+5. The prologue has 3 different paths based on your first choice:
+   - Investigate the gun
+   - Check the body
+   - Run away immediately
 
 ## License
 
@@ -70,3 +115,9 @@ TBD
 ## Credits
 
 Developed by jaykop
+
+---
+
+## Design Documents
+
+📄 [Game Design Document (Notion)](https://www.notion.so/Memory-Fragments-The-Last-Witness-290a22726e068105a5d0caeb5283e44c)
