@@ -1,0 +1,196 @@
+{
+  "chapter": 5,
+  "scene": "rooftop_01",
+  "dialogues": [
+    {
+      "id": 1,
+      "speaker": "narrator",
+      "text": "차갑고 축축한 감촉. 천천히 눈을 뜬다.",
+      "next": 2
+    },
+    {
+      "id": 2,
+      "speaker": "junhyuk",
+      "text": "으... 여기가... 어디지?",
+      "next": 3
+    },
+    {
+      "id": 3,
+      "speaker": "narrator",
+      "text": "머리가 지끈거린다. 주변을 둘러본다. 폐건물 옥상. 차가운 콘크리트 바닥.",
+      "next": 4
+    },
+    {
+      "id": 4,
+      "speaker": "junhyuk",
+      "text": "이건... 권총?",
+      "next": 5
+    },
+    {
+      "id": 5,
+      "speaker": "narrator",
+      "text": "손에는 피 묻은 권총이 쥐어져 있다. 발치에는... 쓰러진 누군가.",
+      "next": 6
+    },
+    {
+      "id": 6,
+      "speaker": "junhyuk",
+      "text": "...!",
+      "next": 7
+    },
+    {
+      "id": 7,
+      "speaker": "narrator",
+      "text": "얼굴은 알아볼 수 없다. 혈흔. 저 멀리서 사이렌 소리가 들린다.",
+      "next": 8
+    },
+    {
+      "id": 8,
+      "speaker": "radio",
+      "text": "(지지직) 준혁, 네가 왜 그랬어... 응답해!",
+      "next": 9
+    },
+    {
+      "id": 9,
+      "speaker": "junhyuk",
+      "text": "뭐... 무슨 소리야? 대체 무슨 일이...",
+      "next": 10
+    },
+    {
+      "id": 10,
+      "speaker": "narrator",
+      "text": "옥상 가장자리, 난간에 메모 한 장이 바람에 펄럭인다.",
+      "next": 11
+    },
+    {
+      "id": 11,
+      "speaker": "junhyuk",
+      "text": "\"진실을 기억해\"... 이게 무슨?",
+      "next": 12
+    },
+    {
+      "id": 12,
+      "speaker": "narrator",
+      "text": "계단 쪽에서 발소리가 들린다. 점점 가까워진다. 빠르게 결정해야 한다.",
+      "next": 13
+    },
+    {
+      "id": 13,
+      "type": "choice",
+      "text": "어떻게 할까?",
+      "choices": [
+        {
+          "text": "권총을 조사한다",
+          "next": 14,
+          "trust_change": 5
+        },
+        {
+          "text": "시체를 확인한다",
+          "next": 20,
+          "trust_change": 5
+        },
+        {
+          "text": "즉시 도망친다",
+          "next": 30,
+          "trust_change": -5
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "speaker": "junhyuk",
+      "text": "이 권총... 내 것이 맞아. 하지만 발사 기록이...",
+      "next": 15
+    },
+    {
+      "id": 15,
+      "speaker": "narrator",
+      "text": "한 발. 최근에 발사되었다. 지문은 닦여있다.",
+      "next": 16
+    },
+    {
+      "id": 16,
+      "speaker": "junhyuk",
+      "text": "누가... 왜?",
+      "next": 17
+    },
+    {
+      "id": 17,
+      "speaker": "narrator",
+      "text": "발소리가 더 가까워졌다. 이제 문 앞이다.",
+      "next": 18
+    },
+    {
+      "id": 18,
+      "speaker": "voice",
+      "text": "준혁! 거기 있어?!",
+      "next": 19
+    },
+    {
+      "id": 19,
+      "speaker": "narrator",
+      "text": "아는 목소리다. 하지만 지금은... [프롤로그 종료]",
+      "next": -1
+    },
+    {
+      "id": 20,
+      "speaker": "narrator",
+      "text": "조심스럽게 시체에 다가간다. 얼굴은 심하게 손상되어 알아볼 수 없다.",
+      "next": 21
+    },
+    {
+      "id": 21,
+      "speaker": "junhyuk",
+      "text": "옷차림은... 정장? 내부 주머니에 뭔가...",
+      "next": 22
+    },
+    {
+      "id": 22,
+      "speaker": "narrator",
+      "text": "경찰 신분증. 하지만 이름이 지워져 있다. 누군가 의도적으로.",
+      "next": 23
+    },
+    {
+      "id": 23,
+      "speaker": "junhyuk",
+      "text": "동료... 였던 건가?",
+      "next": 17
+    },
+    {
+      "id": 30,
+      "speaker": "narrator",
+      "text": "본능적으로 몸을 일으킨다. 반대편 계단으로.",
+      "next": 31
+    },
+    {
+      "id": 31,
+      "speaker": "junhyuk",
+      "text": "일단... 여기서 벗어나야 해!",
+      "next": 32
+    },
+    {
+      "id": 32,
+      "speaker": "narrator",
+      "text": "하지만 핸드폰이 울린다. 발신자: 알 수 없음.",
+      "next": 33
+    },
+    {
+      "id": 33,
+      "speaker": "unknown",
+      "text": "도망치려고? 넌 이미 늦었어, 이준혁.",
+      "next": 34
+    },
+    {
+      "id": 34,
+      "speaker": "junhyuk",
+      "text": "...누구야?!",
+      "next": 35
+    },
+    {
+      "id": 35,
+      "speaker": "unknown",
+      "text": "곧 알게 될 거야. 2시간 전을 기억해봐. [프롤로그 종료]",
+      "next": -1
+    }
+  ]
+}
