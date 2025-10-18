@@ -1,7 +1,6 @@
-Microsoft.NET.Sdk.sln
 
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio Version 17
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "memory-fragments", "memory-fragments.csproj", "{3D7E8DB0-8B4A-4F25-B5A7-9E2F6C8E3D1A}"
 EndProject
 Global
