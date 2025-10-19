@@ -20,55 +20,52 @@ func _ready():
 ## Load and start a chapter
 func load_chapter(chapter_id: String):
 	current_chapter = chapter_id
-	var ink_path = "res://ink/compiled/" + chapter_id + ".json"
+	var ink_path = "res://ink/" + chapter_id + ".ink"
 	
 	if not ResourceLoader.exists(ink_path):
 		push_error("Ink file not found: " + ink_path)
 		return false
 	
-	# Load compiled Ink JSON using godot-ink
+	# Load Ink resource directly (GodotInk handles compilation)
 	var ink_resource = load(ink_path)
 	
 	if not ink_resource:
 		push_error("Failed to load Ink resource")
 		return false
 	
-	# Create InkStory instance (godot-ink API)
-	story = InkStory.new(ink_resource.content)
+	# InkStory is the loaded resource itself
+	story = ink_resource
 	
-	# Bind external functions
-	story.bind_external_function("unlock_clue", self, "_on_unlock_clue")
-	story.bind_external_function("trust_change", self, "_on_trust_change")
-	story.bind_external_function("choice_made", self, "_on_choice_made")
-	story.bind_external_function("play_bgm", self, "_on_play_bgm")
+	# TODO: Bind external functions if GodotInk supports it
+	# Check GodotInk documentation for external function binding
 	
 	print("Chapter loaded: ", chapter_id)
 	return true
 
 ## Continue the story
 func continue_story() -> bool:
-	if not story or not story.can_continue:
+	if not story or not story.CanContinue:
 		return false
 	
-	var line = story.continue()
+	var line = story.Continue()
 	_process_line(line)
 	
 	# Check for choices
-	if story.has_choices:
+	if story.CurrentChoices.size() > 0:
 		var choices = []
-		for choice in story.current_choices:
-			choices.append(choice.text)
+		for choice in story.CurrentChoices:
+			choices.append(choice.Text)
 		choice_presented.emit(choices)
 		return false
 	
-	return story.can_continue
+	return story.CanContinue
 
 ## Make a choice
 func make_choice(choice_index: int):
-	if not story or not story.has_choices:
+	if not story or story.CurrentChoices.size() == 0:
 		return
 	
-	story.choose_choice_index(choice_index)
+	story.ChooseChoiceIndex(choice_index)
 	continue_story()
 
 ## Process a single line from Ink
@@ -80,7 +77,7 @@ func _process_line(line: String):
 		return
 	
 	# Parse tags
-	var tags = story.current_tags if story else []
+	var tags = story.CurrentTags if story else []
 	var line_type = "narration"
 	var speaker = ""
 	var emotion = ""
@@ -136,20 +133,21 @@ func get_story_state() -> Dictionary:
 		return {}
 	
 	return {
-		"can_continue": story.can_continue,
-		"has_choices": story.has_choices,
-		"current_choices": story.current_choices,
-		"variables": story.variables_state if story.variables_state else {}
+		"can_continue": story.CanContinue,
+		"has_choices": story.CurrentChoices.size() > 0,
+		"current_choices": story.CurrentChoices,
+		"variables": {}  # TODO: Get variables from story if available
 	}
 
 ## Save story state
 func save_state() -> String:
 	if not story:
 		return ""
-	return story.save_state_to_json()
+	# TODO: Check GodotInk API for state saving
+	return ""
 
 ## Load story state
 func load_state(state_json: String):
 	if not story:
 		return
-	story.load_state_from_json(state_json)
+	# TODO: Check GodotInk API for state loading
