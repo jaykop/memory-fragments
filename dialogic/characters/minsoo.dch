@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="DialogicCharacter" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/dialogic/Resources/character.gd" id="1_1"]
+
+[resource]
+script = ExtResource("1_1")
+resource_name = &"minsoo"
+display_name = "최민수"
+nicknames = ["민수", "민수 형"]
+color = Color(0.8, 0.3, 0.2, 1)
+description = "준혁의 선배 형사. 믿을 수 있는 동료."
+default_portrait = ""
+custom_info = {
+}

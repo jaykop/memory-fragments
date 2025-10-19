@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="DialogicCharacter" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/dialogic/Resources/character.gd" id="1_1"]
+
+[resource]
+script = ExtResource("1_1")
+resource_name = &"junhyuk"
+display_name = "이준혁"
+nicknames = ["준혁", "형사"]
+color = Color(0.2, 0.5, 0.8, 1)
+description = "주인공. 기억을 잃은 형사."
+default_portrait = ""
+custom_info = {
+}

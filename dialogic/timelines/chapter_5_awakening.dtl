@@ -1,0 +1,80 @@
+추웠다.
+[wait time="0.5"]
+콘크리트 바닥이 등짝을 파고든다.
+입안이 바싹 마르고, 왼쪽 관자놀이가 욱신거린다.
+[wait time="0.8"]
+[style #FF0000]어디지.[/style]
+[wait time="0.5"]
+눈을 뜨니 하늘이 보인다. 구름 낀 밤하늘.
+고개를 돌리자 뭔가 손에 잡힌다. 차갑고 무거운.
+[wait time="0.5"]
+권총.
+[wait time="0.8"]
+손잡이에 피가 묻어있다.
+[wait time="1.0"]
+일어나 앉으려는데 발에 뭔가 걸렸다.
+...사람이다.
+[wait time="0.8"]
+엎드려 있다. 움직이지 않는다.
+뒤통수에서 검붉은 게 흘러나와 바닥을 적시고 있다.
+[wait time="1.2"]
+뒤로 물러난다. 손에서 권총을 놓쳤다.
+떨어지는 소리가 유난히 크게 들린다.
+[wait time="0.8"]
+[style #FF0000]어떻게 된 거지.
+왜 여기 있지.
+저 사람은 누구지.[/style]
+[wait time="1.0"]
+기억이.
+[wait time="0.5"]
+기억이 안 난다.
+[wait time="1.5"]
+[signal arg="unlock_clue:scene_intro"]
+join minsoo
+[wait time="0.3"]
+minsoo: 준혁아.
+[wait time="0.5"]
+minsoo: 나야, 민수.
+[wait time="0.5"]
+[style #FF0000]민수?[/style]
+[wait time="0.3"]
+minsoo: ...거기 있는 거 알아. 응답 좀 해봐.
+[wait time="0.5"]
+join junhyuk (left)
+junhyuk: 어, 민수 형?
+[wait time="0.3"]
+minsoo: ...아, 씨발. 진짜네.
+[wait time="1.5"]
+minsoo: 지금 어디야. 안 다쳤어?
+junhyuk: 다치진... 근데 형, 나 지금...
+[wait time="0.5"]
+[style #FF0000]뭐라고 해야 하지.[/style]
+[wait time="0.3"]
+junhyuk: 여기 사람이 쓰러져 있는데. 죽은 것 같아.
+minsoo: ...알고 있어.
+junhyuk: 뭐?
+minsoo: 네가 신고한 거 아니야. 익명 제보 들어왔거든.
+[wait time="0.5"]
+[style #FF0000]신고?[/style]
+[wait time="0.3"]
+junhyuk: 아니, 나 기억이 안 나서...
+minsoo: 뭐가?
+junhyuk: 전부. 왜 여기 왔는지도 모르겠고, 저 사람이 누군지도...
+minsoo: 준혁아.
+[wait time="0.8"]
+minsoo: 지금 그 자리에서 한 발자국도 움직이지 마. 알았지?
+junhyuk: ...예?
+minsoo: 5분. 내가 5분 안에 간다. 그때까지 아무 것도 만지지 말고.
+junhyuk: 형, 뭔 소리...
+minsoo: 준혁아, 제발.
+[wait time="0.5"]
+minsoo: 넌... 넌 그런 놈 아니잖아. 그러니까 그냥 기다려.
+[wait time="0.8"]
+leave minsoo
+[wait time="0.5"]
+통신이 끊겼다.
+[wait time="0.5"]
+[style #FF0000]그런 놈?[/style]
+[wait time="1.0"]
+[signal arg="unlock_clue:radio_minsoo"]
+[signal arg="chapter_complete:awakening"]

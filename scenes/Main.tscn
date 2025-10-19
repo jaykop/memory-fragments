@@ -1,7 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://c7qfwvw7aihqh"]
+[gd_scene load_steps=2 format=3 uid="uid://c7qfwvw7aihqh"]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1_main"]
-[ext_resource type="PackedScene" uid="uid://buwl5iy34ykqd" path="res://scenes/DialogueSystem.tscn" id="2_dialogue"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_main")
@@ -13,5 +12,3 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.1, 0.1, 0.15, 1)
-
-[node name="DialogueSystem" parent="." instance=ExtResource("2_dialogue")]
