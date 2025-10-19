@@ -19,7 +19,6 @@ config/icon="res://icon.svg"
 [autoload]
 
 GameManager="*res://scripts/core/GameManager.gd"
-InkManager="*res://scripts/story/ink_manager.gd"
 
 [display]
 
@@ -27,10 +26,6 @@ window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/size/mode=2
 window/stretch/mode="viewport"
-
-[editor_plugins]
-
-enabled=PackedStringArray("res://addons/GodotInk/plugin.cfg")
 
 [input]
 
