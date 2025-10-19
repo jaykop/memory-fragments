@@ -31,6 +31,10 @@ window/stretch/mode="viewport"
 
 project/assembly_name="Memory Fragments"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/GodotInk/plugin.cfg")
+
 [input]
 
 ui_accept={
