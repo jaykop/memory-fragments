@@ -2,18 +2,15 @@ extends Node
 
 # Main scene controller
 
+@onready var dialogue_player = $DialoguePlayer
+
 func _ready():
 	print("Main scene ready")
 	print("Godot version: ", Engine.get_version_info())
 	
-	# Connect Dialogic signals
-	if Engine.has_singleton("Dialogic"):
-		Dialogic.signal_event.connect(_on_dialogic_signal)
-		Dialogic.timeline_ended.connect(_on_timeline_ended)
-		print("✅ Dialogic connected")
-	else:
-		push_error("❌ Dialogic not available!")
-		return
+	# Connect dialogue player signals
+	dialogue_player.dialogue_ended.connect(_on_dialogue_ended)
+	dialogue_player.signal_received.connect(_on_signal_received)
 	
 	# Small delay to let scene fully load
 	await get_tree().create_timer(0.1).timeout
@@ -23,31 +20,20 @@ func _ready():
 	
 func start_prologue():
 	"""Start Chapter 5 prologue"""
-	print("Starting Chapter 5...")
+	print("📖 Starting Chapter 5: Awakening")
 	
-	# Start Chapter 5 with Dialogic
-	# Dialogic.start() creates its own UI automatically
-	if Engine.has_singleton("Dialogic"):
-		print("📖 Starting Chapter 5: Awakening")
-		var layout = Dialogic.start("res://dialogic/timelines/chapter_5_awakening.dtl")
-		
-		if layout:
-			print("✅ Dialogic layout created")
-			# Add layout to scene tree if needed
-			if not layout.is_inside_tree():
-				add_child(layout)
-		else:
-			push_error("Failed to create Dialogic layout")
+	var success = dialogue_player.start_timeline("res://dialogic/timelines/chapter_5_awakening.dtl")
+	if success:
+		print("✅ Timeline started")
 	else:
-		push_error("Dialogic not available!")
-		print("⚠️ Enable Dialogic plugin in Project Settings")
+		push_error("❌ Failed to start timeline")
 		
-func _on_timeline_ended():
-	print("✅ Timeline ended - Chapter 5 Awakening complete!")
+func _on_dialogue_ended():
+	print("✅ Chapter 5 Awakening complete!")
 	# TODO: Transition to next scene
 
-func _on_dialogic_signal(argument: String):
-	"""Handle custom signals from Dialogic timeline"""
+func _on_signal_received(argument: String):
+	"""Handle custom signals from timeline"""
 	print("📡 Signal received: ", argument)
 	
 	var parts = argument.split(":", true, 1)
