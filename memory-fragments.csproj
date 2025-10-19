@@ -6,6 +6,11 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
   
-  <!-- GodotInk Integration - Use forward slashes for cross-platform compatibility -->
+  <!-- Include GodotInk C# source files -->
+  <ItemGroup>
+    <Compile Include="addons/GodotInk/Src/**/*.cs" />
+  </ItemGroup>
+  
+  <!-- GodotInk Integration -->
   <Import Project="addons/GodotInk/GodotInk.props" />
 </Project>
