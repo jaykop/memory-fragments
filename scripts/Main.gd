@@ -2,18 +2,22 @@ extends Node
 
 # Main scene controller
 
-@onready var dialogue_player = $DialoguePlayer
-
 func _ready():
 	print("Main scene ready")
 	print("Godot version: ", Engine.get_version_info())
 	
-	# Connect dialogue player signals
-	dialogue_player.dialogue_ended.connect(_on_dialogue_ended)
-	dialogue_player.signal_received.connect(_on_signal_received)
+	# Check Dialogic
+	if not Engine.has_singleton("Dialogic"):
+		push_error("❌ Dialogic not available!")
+		return
 	
-	# Small delay to let scene fully load
-	await get_tree().create_timer(0.1).timeout
+	# Connect Dialogic signals
+	Dialogic.signal_event.connect(_on_dialogic_signal)
+	Dialogic.timeline_ended.connect(_on_timeline_ended)
+	print("✅ Dialogic connected")
+	
+	# Small delay
+	await get_tree().create_timer(0.2).timeout
 	
 	# Start the prologue
 	start_prologue()
@@ -22,17 +26,15 @@ func start_prologue():
 	"""Start Chapter 5 prologue"""
 	print("📖 Starting Chapter 5: Awakening")
 	
-	var success = dialogue_player.start_timeline("res://dialogic/timelines/chapter_5_awakening.dtl")
-	if success:
-		print("✅ Timeline started")
-	else:
-		push_error("❌ Failed to start timeline")
+	# Use Dialogic properly with layout scene
+	Dialogic.start("res://dialogic/timelines/chapter_5_awakening.dtl")
+	print("✅ Timeline started")
 		
-func _on_dialogue_ended():
+func _on_timeline_ended():
 	print("✅ Chapter 5 Awakening complete!")
 	# TODO: Transition to next scene
 
-func _on_signal_received(argument: String):
+func _on_dialogic_signal(argument: String):
 	"""Handle custom signals from timeline"""
 	print("📡 Signal received: ", argument)
 	
