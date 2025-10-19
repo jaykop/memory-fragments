@@ -6,11 +6,6 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
   
-  <!-- Include GodotInk C# source files -->
-  <ItemGroup>
-    <Compile Include="addons/GodotInk/Src/**/*.cs" />
-  </ItemGroup>
-  
-  <!-- GodotInk Integration -->
+  <!-- GodotInk Integration - This should handle everything -->
   <Import Project="addons/GodotInk/GodotInk.props" />
 </Project>
