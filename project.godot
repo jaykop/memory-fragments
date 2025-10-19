@@ -19,6 +19,13 @@ config/icon="res://icon.svg"
 [autoload]
 
 GameManager="*res://scripts/core/GameManager.gd"
+Dialogic="*res://addons/dialogic/Core/DialogicGameHandler.gd"
+
+[dialogic]
+
+directories/dch_directory={}
+directories/dtl_directory={}
+layout/style_directory={}
 
 [display]
 
