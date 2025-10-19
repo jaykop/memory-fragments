@@ -5,4 +5,5 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RootNamespace>MemoryFragments</RootNamespace>
   </PropertyGroup>
+  <Import Project="addons\GodotInk\GodotInk.props" />
 </Project>
