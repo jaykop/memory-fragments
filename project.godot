@@ -19,7 +19,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 GameManager="*res://scripts/core/GameManager.gd"
-InkManager="*res://scripts/story/ink_manager.gd"
+InkManager="*res://scripts/story/InkManager.cs"
 
 [display]
 
