@@ -15,6 +15,9 @@ func _ready():
 		push_error("❌ Dialogic not available!")
 		return
 	
+	# Small delay to let scene fully load
+	await get_tree().create_timer(0.1).timeout
+	
 	# Start the prologue
 	start_prologue()
 	
@@ -23,9 +26,18 @@ func start_prologue():
 	print("Starting Chapter 5...")
 	
 	# Start Chapter 5 with Dialogic
+	# Dialogic.start() creates its own UI automatically
 	if Engine.has_singleton("Dialogic"):
 		print("📖 Starting Chapter 5: Awakening")
-		Dialogic.start("res://dialogic/timelines/chapter_5_awakening.dtl")
+		var layout = Dialogic.start("res://dialogic/timelines/chapter_5_awakening.dtl")
+		
+		if layout:
+			print("✅ Dialogic layout created")
+			# Add layout to scene tree if needed
+			if not layout.is_inside_tree():
+				add_child(layout)
+		else:
+			push_error("Failed to create Dialogic layout")
 	else:
 		push_error("Dialogic not available!")
 		print("⚠️ Enable Dialogic plugin in Project Settings")
