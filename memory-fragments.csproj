@@ -4,14 +4,9 @@
     <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net8.0</TargetFramework>
     <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'ios' ">net8.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
+    <RootNamespace>MemoryFragments</RootNamespace>
   </PropertyGroup>
   
   <!-- GodotInk Integration -->
   <Import Project="addons/GodotInk/GodotInk.props" />
-  
-  <!-- Manually include GodotInk C# source files (Godot's auto-scan isn't working) -->
-  <ItemGroup>
-    <Compile Include="addons/GodotInk/Src/*.cs" Exclude="addons/GodotInk/Src/*.Interop.cs" />
-    <Compile Include="addons/GodotInk/Src/*.Interop.cs" />
-  </ItemGroup>
 </Project>
