@@ -1,0 +1,23 @@
+# Dialogic Timeline: Chapter 5 - The Last Witness
+# Converted from Ink format
+# This is a SAMPLE - actual .dtl files are created in Godot Editor
+
+# ============================================================================
+# IMPORTANT: This is a reference guide, not the actual timeline file
+# Actual Dialogic timelines are created in the Dialogic Editor UI
+# This shows the structure and conversion approach
+# ============================================================================
+
+## Scene: Awakening
+# Original Ink: === awakening ===
+
+[style name="narration"]
+추웠다.
+
+콘크리트 바닥이 등짝을 파고든다.
+입안이 바싹 마르고, 왼쪽 관자놀이가 욱신거린다.
+
+[style name="thought"]
+어디지.
+
+(Sample continues...)
